@@ -28,9 +28,9 @@ app.add_middleware(
 # Load model artifacts at startup
 try:
     # Load model artifacts at startup
-    model = joblib.load('xgb_boost_model.joblib')
-    scaler = joblib.load('scaler.joblib')
-    with open('encoding_mappings.pkl', 'rb') as f:
+    model = joblib.load('xgb_boost_model_v2.joblib')
+    scaler = joblib.load('scaler_v2.joblib')
+    with open('encoding_mappings_v2.pkl', 'rb') as f:
         encoding_mappings = pickle.load(f)
 except Exception as e:
     logger.error(f"Failed to load model artifacts: {str(e)}")
@@ -44,7 +44,7 @@ class PredictionInput(BaseModel):
     RegionName: Optional[str] = None
     ZoneName: Optional[str] = None
     WoredaName: Optional[str] = None
-    TMSuspected_Fever_Examined: Optional[float] = None
+    #TMSuspected_Fever_Examined: Optional[float] = None
     temp_max: Optional[float] = None
     temp_min: Optional[float] = None
     temp_mean: Optional[float] = None
@@ -191,8 +191,7 @@ def model_prediction(model, scaler, encoding_mappings, new_data):
         new_data = data_preprocessing(new_data, scaler, encoding_mappings)
         new_data = feature_engineering(new_data)
         
-        features = ['Epidemic_Week', 'TMSuspected Fever Examined', 
-                    'temp_max', 'temp_min', 'temp_mean', 'rainfall', 
+        features = ['Epidemic_Week', 'temp_max', 'temp_min', 'temp_mean', 'rainfall', 
                     'rel_humidity_mean', 'rel_humidity_max', 'rel_humidity_min',
                     'RegionName_encoded', 'ZoneName_encoded', 'WoredaName_encoded',
                     'Epidemic_Week_sin', 'Epidemic_Week_cos', 'Month_sin', 'Month_cos',
@@ -231,7 +230,7 @@ async def predict(request: PredictionRequest):
         input_data = [item.dict() for item in request.data]
         df = pd.DataFrame(input_data)
         
-        df = df.rename(columns={'TMSuspected_Fever_Examined': 'TMSuspected Fever Examined'})
+        #df = df.rename(columns={'TMSuspected_Fever_Examined': 'TMSuspected Fever Examined'})
         
         predictions = model_prediction(model, scaler, encoding_mappings, df)
         # predictions = predictions.tolist()

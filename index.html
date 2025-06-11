@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Malaria Prediction</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%2338A169' d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z'/></svg>">
+    <style>
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #38A169;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: none;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-green-600 to-teal-500 text-white py-6 shadow-lg">
+        <div class="container mx-auto px-4">
+            <h1 class="text-3xl font-bold">Malaria Prediction System</h1>
+            <p class="mt-2 text-lg">Enter data to predict malaria cases in Ethiopia</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8 flex-grow">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Form Section -->
+            <section class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-2xl font-semibold mb-4 text-gray-800">Input Data</h2>
+                <form id="prediction-form" class="space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- Year -->
+                        <div>
+                            <label for="year" class="block text-sm font-medium text-gray-700">Year *</label>
+                            <input type="number" id="year" name="Year" required min="2015" 
+                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                        </div>
+                        <!-- Epidemic Week -->
+                        <div>
+                            <label for="epidemic_week" class="block text-sm font-medium text-gray-700">Epidemic Week *</label>
+                            <input type="number" id="epidemic_week" name="Epidemic_Week" required min="1" max="53"
+                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                        </div>
+                    </div>
+                    <!-- Month -->
+                    <div>
+                        <label for="month" class="block text-sm font-medium text-gray-700">Month *</label>
+                        <select id="month" name="Month" required
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                            <option value="" disabled selected>Select a month</option>
+                            <option value="January">January</option>
+                            <option value="February">February</option>
+                            <option value="March">March</option>
+                            <option value="April">April</option>
+                            <option value="May">May</option>
+                            <option value="June">June</option>
+                            <option value="July">July</option>
+                            <option value="August">August</option>
+                            <option value="September">September</option>
+                            <option value="October">October</option>
+                            <option value="November">November</option>
+                            <option value="December">December</option>
+                        </select>
+                    </div>
+                    <!-- Region, Zone, Woreda -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div>
+                            <label for="region_name" class="block text-sm font-medium text-gray-700">Region Name</label>
+                            <input type="text" id="region_name" name="RegionName"
+                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                        </div>
+                        <div>
+                            <label for="zone_name" class="block text-sm font-medium text-gray-700">Zone Name</label>
+                            <input type="text" id="zone_name" name="ZoneName"
+                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                        </div>
+                        <div>
+                            <label for="woreda_name" class="block text-sm font-medium text-gray-700">Woreda Name</label>
+                            <input type="text" id="woreda_name" name="WoredaName"
+                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                        </div>
+                    </div>
+                    <!-- Numerical Inputs -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="fever_examined" class="block text-sm font-medium text-gray-700">Suspected Fever Examined</label>
+                            <input type="number" id="fever_examined" name="TMSuspected_Fever_Examined" step="any"
+                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                        </div>
+                        <div>
+                            <label for="temp_max" class="block text-sm font-medium text-gray-700">Max Temperature (°C)</label>
+                            <input type="number" id="temp_max" name="temp_max" step="any"
+                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                        </div>
+                        <div>
+                            <label for="temp_min" class="block text-sm font-medium text-gray-700">Min Temperature (°C)</label>
+                            <input type="number" id="temp_min" name="temp_min" step="any"
+                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                        </div>
+                        <div>
+                            <label for="temp_mean" class="block text-sm font-medium text-gray-700">Mean Temperature (°C)</label>
+                            <input type="number" id="temp_mean" name="temp_mean" step="any"
+                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                        </div>
+                        <div>
+                            <label for="rainfall" class="block text-sm font-medium text-gray-700">Rainfall (mm)</label>
+                            <input type="number" id="rainfall" name="rainfall" step="any"
+                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                        </div>
+                        <div>
+                            <label for="humidity_mean" class="block text-sm font-medium text-gray-700">Mean Humidity (%)</label>
+                            <input type="number" id="humidity_mean" name="rel_humidity_mean" step="any"
+                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                        </div>
+                        <div>
+                            <label for="humidity_max" class="block text-sm font-medium text-gray-700">Max Humidity (%)</label>
+                            <input type="number" id="humidity_max" name="rel_humidity_max" step="any"
+                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                        </div>
+                        <div>
+                            <label for="humidity_min" class="block text-sm font-medium text-gray-700">Min Humidity (%)</label>
+                            <input type="number" id="humidity_min" name="rel_humidity_min" step="any"
+                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500">
+                        </div>
+                    </div>
+                    <!-- Buttons -->
+                    <div class="flex space-x-4">
+                        <button type="submit" id="submit-btn" 
+                                class="flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <span>Predict</span>
+                            <div id="spinner" class="spinner ml-2"></div>
+                        </button>
+                        <button type="button" id="clear-btn" 
+                                class="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500">
+                            Clear
+                        </button>
+                    </div>
+                </form>
+                <!-- Error Message -->
+                <div id="error-message" class="hidden mt-4 p-4 bg-red-100 text-red-700 rounded-md"></div>
+            </section>
+
+            <!-- Results Section -->
+            <section id="results-section" class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-2xl font-semibold mb-4 text-gray-800">Prediction Results</h2>
+                <div id="results" class="space-y-4"></div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-4 mt-auto">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2025 Malaria Prediction System. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const form = document.getElementById('prediction-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const spinner = document.getElementById('spinner');
+        const errorMessage = document.getElementById('error-message');
+        const resultsDiv = document.getElementById('results');
+        const clearBtn = document.getElementById('clear-btn');
+
+        // Validate input in real-time
+        form.querySelectorAll('input, select').forEach(input => {
+            input.addEventListener('input', () => {
+                if (input.validity.valid) {
+                    input.classList.remove('border-red-500');
+                    input.classList.add('border-gray-300');
+                } else {
+                    input.classList.remove('border-gray-300');
+                    input.classList.add('border-red-500');
+                }
+            });
+        });
+
+        // Form submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            submitBtn.disabled = true;
+            spinner.style.display = 'block';
+            errorMessage.classList.add('hidden');
+            resultsDiv.innerHTML = '';
+
+            // Collect form data
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData);
+            
+            // Validate Epidemic Week
+            const epidemicWeek = parseInt(data.Epidemic_Week);
+            if (epidemicWeek < 1 || epidemicWeek > 53) {
+                showError('Epidemic Week must be between 1 and 53');
+                resetFormState();
+                return;
+            }
+
+            // Validate Year
+            const year = parseInt(data.Year);
+            if (year < 2015) {
+                showError('Year must be 2015 or later');
+                resetFormState();
+                return;
+            }
+
+            // Prepare payload
+            const payload = {
+                data: [{
+                    Year: year,
+                    Epidemic_Week: epidemicWeek,
+                    Month: data.Month,
+                    RegionName: data.RegionName || null,
+                    ZoneName: data.ZoneName || null,
+                    WoredaName: data.WoredaName || null,
+                    TMSuspected_Fever_Examined: parseFloat(data.TMSuspected_Fever_Examined) || null,
+                    temp_max: parseFloat(data.temp_max) || null,
+                    temp_min: parseFloat(data.temp_min) || null,
+                    temp_mean: parseFloat(data.temp_mean) || null,
+                    rainfall: parseFloat(data.rainfall) || null,
+                    rel_humidity_mean: parseFloat(data.rel_humidity_mean) || null,
+                    rel_humidity_max: parseFloat(data.rel_humidity_max) || null,
+                    rel_humidity_min: parseFloat(data.rel_humidity_min) || null
+                }]
+            };
+
+            try {
+                const response = await fetch('http://127.0.0.1:8000/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || 'API request failed');
+                }
+
+                const result = await response.json();
+                displayResults(result.predictions);
+                
+                // Scroll to results
+                resultsDiv.scrollIntoView({ behavior: 'smooth' });
+            } catch (error) {
+                showError(error.message);
+            } finally {
+                resetFormState();
+            }
+        });
+
+        // Clear form
+        clearBtn.addEventListener('click', () => {
+            form.reset();
+            errorMessage.classList.add('hidden');
+            resultsDiv.innerHTML = '';
+            form.querySelectorAll('input, select').forEach(input => {
+                input.classList.remove('border-red-500');
+                input.classList.add('border-gray-300');
+            });
+        });
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.remove('hidden');
+        }
+
+        function displayResults(predictions) {
+            const resultCard = document.createElement('div');
+            resultCard.className = 'p-4 bg-green-50 text-green-800 rounded-md fade-in';
+            resultCard.innerHTML = `
+                <h3 class="text-lg font-semibold">Predicted Malaria Cases</h3>
+                <p class="mt-2 text-2xl font-bold">${predictions[0].toFixed(2)}</p>
+            `;
+            resultsDiv.appendChild(resultCard);
+        }
+
+        function resetFormState() {
+            submitBtn.disabled = false;
+            spinner.style.display = 'none';
+        }
+    </script>
+</body>
+</html>
